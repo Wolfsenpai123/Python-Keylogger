@@ -1,129 +1,110 @@
-# System Monitoring & Security Research Tool (SMSA)
+# Consent-Based Input Security Lab
 
-## 📌 Overview
-This project is an integrated system monitoring tool developed in Python for educational and research purposes. It focuses on system data collection, secure data encryption, and remote reporting within the framework of **CyberOps** and **Network Security** studies.
+Consent-Based Input Security Lab is a local-only Python desktop application that demonstrates privacy-by-design input analytics. It uses a visible Tkinter interface, requires explicit consent before a session can begin, and records only aggregate event categories from the app's own practice text field.
 
-The tool simulates the functionality of a security management agent by logging user interactions, capturing visual state data, and transmitting reports securely via SMTP.
+This repository was redesigned from an earlier educational monitoring script into a safer cybersecurity portfolio project. The new architecture keeps defensible learning goals such as event categorization, local session lifecycle, aggregate analytics, and integrity verification while removing unsafe monitoring, stealth, persistence, screenshots, and remote reporting behavior.
 
----
+## Features
 
-## ✨ Key Features
+- Consent-first interface with a mandatory checkbox before session start.
+- Controlled practice text field inside the application.
+- Event categories only: letter, digit, space, backspace, enter, punctuation, navigation, modifier, and other.
+- Live aggregate metrics for duration, total events, category counts, backspaces, and typing pace.
+- Basic Tkinter Canvas summary chart.
+- User-controlled JSON and CSV export to `data/exports/`.
+- SHA-256 digest for tamper-evidence of exported JSON payloads.
+- JSON export verification tool in the UI.
+- In-memory session deletion that clears visible metrics and the practice field.
+- Unit tests for privacy, analytics, exporting, and integrity.
 
-### 1. Activity Monitoring
-* **Keystroke Logging:** Records every keypress along with timestamps and the name of the active window/process.
-* **Mouse Tracking:** Logs mouse click coordinates to analyze user interaction patterns.
-* **Periodic Screenshots:** Automatically captures the desktop at configurable intervals (default: 5 minutes).
+## Privacy Guarantees
 
-### 2. Security & Data Integrity
-* **AES Encryption:** Utilizes the **Fernet (Symmetric Encryption)** scheme to encrypt log files, protecting data from unauthorized local access.
-* **Environment Variable Integration:** Credentials are kept secure by using system environment variables instead of hardcoded strings.
-* **Secure Reporting:** Automatically packages encrypted logs and the latest screenshots into an email sent via SMTP.
-* **Automated Cleanup:** Manages storage by deleting logs and screenshots older than a specified threshold (default: 7 days).
+The application does not store raw typed content. It does not capture input outside its own text field. It does not read the clipboard, take screenshots, inspect active windows, collect process names, collect usernames, collect IP addresses, generate machine identifiers, install persistence, hide itself, or send data over a network.
 
-### 3. Stealth & Persistence
-* **Persistence:** Automatically registers with the Windows Registry (`Run` key) to ensure the tool starts upon system boot.
-* **Stealth Mode:** Operates as a background process by hiding the console window on Windows systems.
-* **Single Instance Protection:** Uses a system-wide **Mutex** to prevent multiple instances of the tool from running simultaneously.
+Exports are local files created only after the user clicks Export Summary. They contain aggregate counts, coarse session timestamps, an aggregate pace estimate, app version, export creation time, and a SHA-256 integrity digest.
 
----
+## Non-Goals
 
-## 🛠 Project Structure
-```text
-.
-├── main.py                # Core execution script
-├── secret.key             # Encryption key (auto-generated)
-├── log.txt                # Local temporary log file
-├── encrypted_log.dat      # Encrypted log file for transmission
-└── screenshots/           # Directory for captured screen images
+- No global key capture.
+- No stealth mode.
+- No persistence or auto-start.
+- No screenshots or screen recording.
+- No mouse tracking.
+- No clipboard access.
+- No remote reporting, SMTP, webhooks, sockets, or HTTP requests.
+- No credential collection.
+- No surveillance or background monitoring.
+
+## Installation
+
+Python 3.11 or newer is required.
+
+```bash
+python -m pip install -e ".[dev]"
 ```
-Here is the complete content for your README.md file in English. I have consolidated everything into a single code block for you to copy and paste directly into your project.
 
-Markdown
-# System Monitoring & Security Research Tool (SMSA)
+If you use `just`, the same setup is available as:
 
-## 📌 Project Overview
-This project is an integrated system monitoring tool developed in Python for educational and research purposes. It focuses on system data collection, secure data encryption, and remote reporting within the framework of **CyberOps** and **Network Security** studies.
-
-The tool simulates the functionality of a security management agent by logging user interactions, capturing visual state data, and transmitting reports securely via SMTP.
-
----
-
-## ✨ Key Features
-
-### 1. Activity Monitoring
-* **Keystroke Logging:** Records every keypress along with timestamps and the name of the active window/process.
-* **Mouse Tracking:** Logs mouse click coordinates to analyze user interaction patterns.
-* **Periodic Screenshots:** Automatically captures the desktop at configurable intervals to monitor visual activity.
-
-### 2. Security & Data Integrity
-* **AES Encryption:** Utilizes the **Fernet (Symmetric Encryption)** scheme to encrypt log files, protecting data from unauthorized local access.
-* **Credential Protection:** Retrieves sensitive information (Email/Password) from system environment variables instead of hardcoding them, preventing data leaks.
-* **Secure Reporting:** Automatically packages encrypted logs and the latest screenshots into an email sent via SMTP (Gmail).
-* **Automated Cleanup:** Manages storage by deleting logs and screenshots older than a specified threshold (e.g., 7 days).
-
-### 3. Stealth & Persistence
-* **Persistence:** Automatically registers with the Windows Registry (`Run` key) to ensure the tool starts upon system boot.
-* **Stealth Mode:** Operates as a background process by hiding the console window on Windows systems.
-* **Single Instance Protection:** Uses a system-wide **Mutex** to prevent multiple instances of the tool from running simultaneously.
-
----
-
-## 🛠 Project Structure
-```text
-.
-├── main.py                # Core execution script
-├── secret.key             # Encryption key (auto-generated)
-├── log.txt                # Local temporary log file
-├── encrypted_log.dat      # Encrypted log file for transmission
-└── screenshots/           # Directory for captured screen images
+```bash
+just install
 ```
-## 🚀 Getting Started
 
-### 1. System Requirements
-Operating System: Windows 10/11 (Required for persistence and stealth features).
+## Run
 
-Python: Version 3.8 or higher.
-
-### 2. Installation
-Install the necessary dependencies using pip:
-
-Bash
+```bash
+PYTHONPATH=src python -m consent_input_lab.app
 ```
-pip install pynput pyautogui cryptography psutil pywin32
+
+Or, after installation:
+
+```bash
+consent-input-lab
 ```
-### 3. Configuration (Secure Setup)
-To protect your privacy, this script retrieves credentials from your system's environment variables.
 
-Set up environment variables on Windows:
+With `just`:
 
-Open Command Prompt (CMD) or PowerShell.
+```bash
+just run
+```
 
-Run the following commands (replace with your actual data):
+## Test and Lint
 
-DOS
-setx MY_APP_EMAIL "your_email@gmail.com"
-setx MY_APP_PASSWORD "your_google_app_password"
-setx MY_APP_RECEIVER "receiver_email@gmail.com"
-Note: You must use a Google App Password for the MY_APP_PASSWORD variable. Restart your IDE (VS Code/PyCharm) after setting these variables.
+```bash
+PYTHONPATH=src pytest
+ruff check .
+ruff format .
+```
 
-## ⚖️ Disclaimer
-This project is created strictly for educational purposes and academic research at FPT University.
+With `just`:
 
-DO NOT use this tool for illegal activities or unauthorized system access.
+```bash
+just test
+just lint
+just format
+```
 
-Monitoring a computer without the explicit consent of the owner is a violation of privacy laws.
+## Architecture Overview
 
-The author is not responsible for any misuse or damage caused by this source code.
+The app is split into small modules under `src/consent_input_lab/`:
 
-### 👤 Author
-Phan Thiện Quang
+- `app.py`: desktop entry point.
+- `ui.py`: Tkinter interface, consent controls, local export and verification buttons.
+- `analytics.py`: consent-gated session lifecycle and aggregate metrics.
+- `privacy.py`: input event classification into safe categories.
+- `models.py`: dataclasses and shared constants.
+- `exporter.py`: allowlisted local JSON and CSV exports.
+- `integrity.py`: SHA-256 digest generation and verification.
 
-Institution: FPT University
+See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md), [docs/SECURITY_DESIGN.md](docs/SECURITY_DESIGN.md), and [docs/THREAT_MODEL.md](docs/THREAT_MODEL.md) for more detail.
 
-Field of Study: Network Security / CyberOps
+## Threat-Model Summary
 
+The primary assets are typed content, user privacy, local export integrity, and user consent. The design prevents common abuse paths by avoiding global hooks, stealth execution, persistence, remote delivery, screenshots, clipboard access, and active-window inspection. Residual risks include local filesystem access by someone who can read exported summaries, shoulder-surfing of visible text in the practice field, and the fact that SHA-256 provides tamper-evidence but not authentication or encryption.
 
-### 💡 Quick Checklist for your `main.py`:
-1.  **Remove Duplicates:** Ensure you have deleted the second `take_screenshot()` function at the bottom of your script (the one with the indentation error).
-2.  **Update Config:** Make sure the top of your script uses `os.environ.get('MY_APP_EMAIL')` and the other variables mentioned in the README.
-3.  **App Password:** Double-check that you are using a 16-character Google App Password, as a re
+## Screenshot Placeholder
+
+Add a manual screenshot here only if you choose to document the visible application UI. The application does not generate or collect screenshots automatically.
+
+## What I Learned
+
+This project demonstrates how to turn a risky monitoring concept into a consent-based security lab. The redesign applies data minimization, explicit consent, local-only processing, structured testing, tamper-evident exports, and threat modeling. It shows that cybersecurity engineering is not just about collecting signals; it is about defining safe boundaries, limiting abuse potential, documenting tradeoffs, and testing privacy guarantees.
